@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import sys
 import json
-import datetime
 import codecs
 
 def convert(filename):
@@ -12,18 +10,20 @@ def convert(filename):
         with codecs.open(filename, 'r', 'utf-8') as f:
             data=json.loads(f.read())
 
+            w.write("Index\tStart Time\tEnd Time\tSpeaker\tTranscript\n")
+
             items = data['results']['items']
-            for item in items:
+            for index, item in enumerate(items):
                 content = item['alternatives'][0]['content']
                 try:
                     speaker,text = content.split(':')
-                except Exception as e:
+                except ValueError:
                     speaker = ''
                     text = content
                     
                 start_time = item.get('start_time')
                 end_time = item.get('end_time')
-                line=f"{start_time}\t{end_time}\t{speaker}\t{text}"
+                line=f"{index}\t{start_time}\t{end_time}\t{speaker}\t{text}"
                 w.write(line + '\n')
 
 
